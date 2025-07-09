@@ -1,0 +1,7 @@
+site_name: Extrator NBS - Autodeal
+plugins:
+    - search
+    - mermaid2
+    - mkdocstrings
+theme:
+  name: material    
