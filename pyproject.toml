@@ -16,7 +16,9 @@ dependencies = [
     "isort (>=6.0.1,<7.0.0)",
     "black (>=25.1.0,<26.0.0)",
     "pytest (>=8.4.1,<9.0.0)",
-    "pytest-watcher (>=0.4.3,<0.5.0)"
+    "pytest-watcher (>=0.4.3,<0.5.0)",
+    "pydantic (>=2.11.7,<3.0.0)",
+    "pandera[io] (>=0.25.0,<0.26.0)"
 ]
 
 
