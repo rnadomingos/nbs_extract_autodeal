@@ -5,3 +5,5 @@ plugins:
     - mkdocstrings
 theme:
   name: material    
+  logo: assets/logo.png
+
