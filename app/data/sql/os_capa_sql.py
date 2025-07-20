@@ -57,8 +57,8 @@ stmt_os_capa = text("""SELECT
                         LEFT JOIN marcas ON marcas.cod_marca = prod.cod_marca
                         LEFT JOIN os_dados_veiculos dados ON os.cod_empresa = dados.cod_empresa AND os.numero_os = dados.numero_os
                         -- LEFT JOIN os_relacoes ON os_relacoes.numero_os = os.numero_os AND os_relacoes.cod_empresa = os.cod_empresa
-                        -- WHERE TO_CHAR(os.data_emissao,'dd/MM/YYYY') >= to_char(sysdate,'dd/MM/YYYY') -- PARA UTILIZAR NA ROTINA AUTOMÁTICA
-                        WHERE TO_CHAR(os.data_emissao,'YYYY-MM-dd') >= :max_data -- PARA UTILIZAR NA ROTINA AUTOMÁTICA
+                        -- WHERE TO_CHAR(os.data_emissao,'dd/MM/YYYY') >= :max_date -- PARA UTILIZAR NA ROTINA AUTOMÁTICA
+                        WHERE TO_CHAR(os.data_emissao,'YYYY-MM-dd') >= :max_date -- PARA UTILIZAR NA ROTINA AUTOMÁTICA
                           AND os.status_os = '0'
                           AND NVL(ostp.garantia, 'N') = 'S'
                           AND os.cod_empresa IN (2, 3, 4)
