@@ -4,6 +4,9 @@ from dotenv import load_dotenv
 
 class env_settings:
   def __init__(self, database_type: str):
+      allowed = {"ORACLE", "POSTGRES"}
+      if database_type.upper() not in allowed:
+         raise ValueError('Invalid database type')
       self.database_type = database_type
 
   def load_settings(self):
