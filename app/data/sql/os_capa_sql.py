@@ -45,7 +45,7 @@ stmt_os_capa = text("""SELECT
                             TRIM(UPPER(emp.empresa_nome_completo)) AS razao_social_dealer,
 
                             -- VALOR ESTIMADO
-                            ((os.valor_servicos_bruto + os.valor_itens_bruto) - (os.valor_desconto_serv - os.valor_desconto_item)) AS valor_estimado_os
+                            NVL(((os.valor_servicos_bruto + os.valor_itens_bruto) - (os.valor_desconto_serv - os.valor_desconto_item)),0) AS valor_estimado_os
 
                         FROM os
                         INNER JOIN produtos prod ON os.cod_produto = prod.cod_produto
@@ -56,9 +56,7 @@ stmt_os_capa = text("""SELECT
                         LEFT JOIN empresas_usuarios usu2 ON os.quem_abriu = usu2.nome
                         LEFT JOIN marcas ON marcas.cod_marca = prod.cod_marca
                         LEFT JOIN os_dados_veiculos dados ON os.cod_empresa = dados.cod_empresa AND os.numero_os = dados.numero_os
-                        -- LEFT JOIN os_relacoes ON os_relacoes.numero_os = os.numero_os AND os_relacoes.cod_empresa = os.cod_empresa
-                        -- WHERE TO_CHAR(os.data_emissao,'dd/MM/YYYY') >= :max_date -- PARA UTILIZAR NA ROTINA AUTOMÁTICA
-                        WHERE TO_CHAR(os.data_emissao,'YYYY-MM-dd') >= :max_date -- PARA UTILIZAR NA ROTINA AUTOMÁTICA
+                        WHERE TO_CHAR(os.data_emissao,'YYYY-MM-dd') >= :max_date 
                           AND os.status_os = '0'
                           AND NVL(ostp.garantia, 'N') = 'S'
                           AND os.cod_empresa IN (2, 3, 4)
