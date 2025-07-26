@@ -2,6 +2,7 @@ from infra.postgres_database import PostgresSessionLocal
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy import func
 from typing import Any
+import os
 
 class LoadMaxDateColumn:
     
@@ -15,6 +16,7 @@ class LoadMaxDateColumn:
         Returns:
             dict: A dictionary with the max date as 'yyyy-MM-dd', or None if not found.
         """
+        START_DATE = os.getenv('INTEGRATION_START_DATE')
         with PostgresSessionLocal() as db:
             try:
                 result = db.query(func.max(date_column)).one()
@@ -22,7 +24,7 @@ class LoadMaxDateColumn:
                 db.commit()
                 if max_date:
                      return { 'max_date': max_date.strftime('%Y-%m-%d')}
-                return { 'max_date': None }
+                return { 'max_date': START_DATE }
             except SQLAlchemyError as e:
                 db.rollback()
                 print("Error load max date:")
