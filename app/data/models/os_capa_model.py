@@ -40,6 +40,7 @@ class OSCapaModel(Base):
     razao_social_dealer = Column(String, nullable=False)
     valor_estimado_os = Column(Float, nullable=False)
     created_at = Column(DateTime, default=func.now())
+    updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
     sent_autodeal = Column(Boolean, default=False)
     sent_at_autodeal = Column(DateTime, nullable=True)
     updated_at_autodeal = Column(DateTime, nullable=True)
