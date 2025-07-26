@@ -1,6 +1,8 @@
 from sqlalchemy import Column, Integer, String, Float, DateTime, Boolean, UniqueConstraint
-from sqlalchemy.sql import func
 from sqlalchemy.orm import declarative_base
+from infra.postgres_database import engine
+from datetime import datetime
+import pytz
 
 Base = declarative_base()
 
@@ -15,6 +17,8 @@ class OSCapaModel(Base):
         data_cancelamento (str): Data de cancelamento da OS.
         ...
     """
+    def now_utc_minus_3(self):
+        return datetime.now(pytz.timezone("America/Sao_Paulo"))
 
     __tablename__ = "os_capa"
 
@@ -39,12 +43,14 @@ class OSCapaModel(Base):
     numero_do_dealer = Column(String, nullable=False)
     razao_social_dealer = Column(String, nullable=False)
     valor_estimado_os = Column(Float, nullable=False)
-    created_at = Column(DateTime, default=func.now())
-    updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
+    created_at = Column(DateTime(timezone=True), default=now_utc_minus_3)
+    updated_at = Column(DateTime(timezone=True), default=now_utc_minus_3, onupdate=now_utc_minus_3)
     sent_autodeal = Column(Boolean, default=False)
-    sent_at_autodeal = Column(DateTime, nullable=True)
-    updated_at_autodeal = Column(DateTime, nullable=True)
+    sent_at_autodeal = Column(DateTime(timezone=True), nullable=True)
+    updated_at_autodeal = Column(DateTime(timezone=True), nullable=True)
     
     __table_args__ = (
         UniqueConstraint("cod_empresa", "numero_os", name="uq_cod_empresa_numero_os"),
     )
+
+Base.metadata.create_all(engine)
