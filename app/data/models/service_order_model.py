@@ -6,7 +6,7 @@ import pytz
 
 Base = declarative_base()
 
-class OSCapaModel(Base):
+class ServiceOrderModel(Base):
     """
     Modelo ORM para a tabela da OS Capa.
     Attributes:
@@ -19,7 +19,7 @@ class OSCapaModel(Base):
     """
     def now_utc_minus_3(self):
         return datetime.now(pytz.timezone("America/Sao_Paulo"))
-
+    
     __tablename__ = "os_capa"
 
     id = Column(Integer, primary_key=True, autoincrement=True)  # campo auxiliar
