@@ -10,8 +10,7 @@ LEFT JOIN os_relacoes
 INNER JOIN os_tipos ostp 
     ON os.tipo = ostp.tipo
 --WHERE to_char(os.data_emissao,'dd/MM/YYYY')= to_char(sysdate,'dd/MM/YYYY') -- PARA UTILIZAR NA ROTINA AUTOMATICA
-WHERE 
-    TO_CHAR(os.data_emissao, 'dd/MM/yyyy') >= '01/07/2025'
+WHERE to_char(os.data_emissao,'YYYY-MM-dd') >= :max_date 
     AND os.status_os = '0'
     AND NVL(ostp.garantia, 'N') = 'S'
     AND os.cod_empresa IN (2, 3, 4)
