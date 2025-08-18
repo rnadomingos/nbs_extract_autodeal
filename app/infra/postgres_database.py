@@ -7,8 +7,8 @@ database = 'POSTGRES'
 load = env_settings(database)
 settings = load.load_settings()
 
-POSTGRES_STRING_URL = f"postgresql://{settings['db_user']}:{settings['db_pass']}@{settings['db_host']}:{settings['db_port']}/?{settings['db_service']}"
-
+POSTGRES_STRING_URL = f"postgresql://{settings['db_user']}:{settings['db_pass']}@{settings['db_host']}:{settings['db_port']}/{settings['db_service']}"
+print('url:', POSTGRES_STRING_URL)
 engine = create_engine(POSTGRES_STRING_URL)
 
 Base = declarative_base
