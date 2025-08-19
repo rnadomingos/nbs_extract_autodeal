@@ -3,7 +3,7 @@ from main.usecases.transformation.format_column import FormatColumn
 from main.usecases.destination.upsert_data import UpsertData
 from main.usecases.source.extract_data import ExtractData
 from data.models.service_order_model import ServiceOrderModel
-from data.schemas.os_capa_schema import OSCapaSchema
+from app.data.schemas.service_orders.os_capa_schema import OSCapaSchema
 from data.sql.service_orders import (stmt_open_service_orders,
                                          stmt_closed_service_orders,
                                          stmt_canceled_service_orders)
