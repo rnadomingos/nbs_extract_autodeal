@@ -3,6 +3,7 @@ from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.exc import SQLAlchemyError
 from typing import Type, TypeVar, Any, cast
+from tqdm import tqdm
 import pandas as pd
 
 Base = declarative_base()
@@ -42,13 +43,24 @@ class UpsertData:
         """
         with PostgresSessionLocal() as db:
             try:
-                rows = cast(list[dict[str, Any]], self.data_frame.to_dict(orient="records"))
+                rows = cast(
+                            list[dict[str, Any]],
+                            self.data_frame.where(pd.notnull(self.data_frame), None).to_dict(orient="records")
+                )
 
-                for row in rows:
+                for row in tqdm(rows, desc=f"Upserting {self.data_model.__tablename__}", unit="row"):
                     stmt = insert(self.data_model).values(**row)
+                # for row in rows:
+                #     stmt = insert(self.data_model).values(**row)
 
                     # Fields to update if a conflict is detected
-                    update_dict = {k: v for k, v in row.items() if k not in self.conflict_keys}
+                    # update_dict = {k: v for k, v in row.items() if k not in self.conflict_keys}
+
+                    update_dict = {
+                        c.name: stmt.excluded[c.name]
+                        for c in self.data_model.__table__.columns
+                        if c.name not in self.conflict_keys
+                    }
 
                     stmt = stmt.on_conflict_do_update(
                         index_elements=self.conflict_keys,
