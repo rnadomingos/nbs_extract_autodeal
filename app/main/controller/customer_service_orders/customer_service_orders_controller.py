@@ -1,21 +1,21 @@
-from main.usecases.destination.load_max_date_column import LoadMaxDateColumn
+from main.usecases.destination.load_max_date_column import TableTools
 from data.models.customer_service_order_model import CustomerServiceOrderModel
 from data.models.service_order_model import ServiceOrderModel
 from main.usecases.source.extract_data import ExtractData
 from data.sql.customer_service_orders import (stmt_open_customer_service_orders, stmt_closed_customers_service_order)
-from data.schemas.customer_service_order_schema import CustomerServiceOrderSchema
+from data.schemas.customer_service_orders.customer_service_order_schema import CustomerServiceOrderSchema
 from main.usecases.destination.upsert_data import UpsertData
 
 class CustomerServiceOrderController:
     def open_customer_service_order_upsert(self):
-        
-        max_emission_date = LoadMaxDateColumn().load(
+
+        max_emission_date = TableTools().loadMaxDateColumn(
             date_column=ServiceOrderModel.data_emissao
         )
 
         extractData = ExtractData(
             query=stmt_open_customer_service_orders,
-            query_params={ 'max_date': '2025-07-01' }
+            query_params= max_emission_date #{ 'max_date': '2025-07-01' }
         )
 
         data_frame_customer_service_order = extractData.get_data_nbs(
@@ -31,13 +31,13 @@ class CustomerServiceOrderController:
         return len(saved_customers_service_order)
     
     def closed_customer_service_order_upsert(self):
-        max_closed_date = LoadMaxDateColumn().load(
+        max_closed_date = TableTools().loadMaxDateColumn(
             date_column=ServiceOrderModel.data_encerramento
         )
 
         extractData = ExtractData(
             query=stmt_closed_customers_service_order,
-            query_params={ 'max_date': '2025-07-01' }
+            query_params= max_closed_date #{ 'max_date': '2025-07-01' }
         )
 
         data_frame_customer_service_order = extractData.get_data_nbs(
