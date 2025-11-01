@@ -1,9 +1,9 @@
-from main.usecases.destination.load_max_date_column import LoadMaxDateColumn
+from main.usecases.destination.load_max_date_column import TableTools
 from main.usecases.transformation.format_column import FormatColumn
 from main.usecases.destination.upsert_data import UpsertData
 from main.usecases.source.extract_data import ExtractData
 from data.models.service_order_model import ServiceOrderModel
-from app.data.schemas.service_orders.os_capa_schema import OSCapaSchema
+from data.schemas.service_orders.os_capa_schema import OSCapaSchema
 from data.sql.service_orders import (stmt_open_service_orders,
                                          stmt_closed_service_orders,
                                          stmt_canceled_service_orders)
@@ -12,7 +12,7 @@ from data.sql.service_orders import (stmt_open_service_orders,
 class ServiceOrderController:
     def open_service_orders_upsert(self):
         
-        max_emission_date = LoadMaxDateColumn().load(
+        max_emission_date = TableTools().loadMaxDateColumn(
             date_column=ServiceOrderModel.data_emissao
             )
         extractData = ExtractData(
@@ -36,7 +36,7 @@ class ServiceOrderController:
     
     def closed_service_orders_upsert(self):
         
-        max_closed_date = LoadMaxDateColumn().load(
+        max_closed_date = TableTools().loadMaxDateColumn(
             date_column=ServiceOrderModel.data_encerramento
             )
         extractData = ExtractData(
@@ -61,7 +61,7 @@ class ServiceOrderController:
     
     def canceled_service_orders_upsert(self):
         
-        max_date_cancellation = LoadMaxDateColumn().load(
+        max_date_cancellation = TableTools().loadMaxDateColumn(
             date_column=ServiceOrderModel.data_cancelamento
             )
         extractData = ExtractData(
