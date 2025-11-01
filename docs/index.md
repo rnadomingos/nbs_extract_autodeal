@@ -46,8 +46,10 @@ classDiagram
     load_to_db --> OSCapaModel : Pode receber
     load_to_db --> OSDetalheModel : Pode receber
 ```    
-## Extract Transform Load (etl.py)
-::: app.etl.ExtractTransformLoad
+## Extract Transform Load
+<!-- ::: app.etl.ExtractTransformLoad -->
+::: app.main.usecases.source.extract_data.ExtractData
 
 ## Schema OS Capa
-::: app.data.schemas.schema_os_capa.OSCapaSchema
+<!-- ::: app.data.schemas.schema_os_capa.OSCapaSchema --> 
+::: app.data.schemas.service_orders.os_capa_schema.OSCapaSchema
