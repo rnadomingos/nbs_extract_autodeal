@@ -1,0 +1,4 @@
+from .sql_open_related_service_order import stmt_open_related_service_orders
+from .sql_closed_related_service_order import stmt_closed_related_service_orders
+
+__all__ = ["stmt_open_related_service_orders", "stmt_closed_related_service_orders"]
