@@ -18,4 +18,5 @@ class FormatColumn:
         for col in df.select_dtypes(include=["datetime64[ns]"]):
             df[col] = df[col].astype(object).where(df[col].notna(), None)
         return df     
+    
 

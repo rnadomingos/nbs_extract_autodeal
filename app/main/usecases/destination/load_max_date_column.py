@@ -1,12 +1,12 @@
-from infra.postgres_database import PostgresSessionLocal
+from infra.postgres_database import PostgresSessionLocal, inspector
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy import func
 from typing import Any
 import os
 
-class LoadMaxDateColumn:
+class TableTools:
     
-    def load(self, date_column:Any) -> dict: 
+    def loadMaxDateColumn(self, date_column:Any) -> dict: 
         """
         Get the maximum date from the given model column and format as 'yyyy-MM-dd'.
 
@@ -17,6 +17,7 @@ class LoadMaxDateColumn:
             dict: A dictionary with the max date as 'yyyy-MM-dd', or None if not found.
         """
         START_DATE = os.getenv('INTEGRATION_START_DATE')
+
         with PostgresSessionLocal() as db:
             try:
                 result = db.query(func.max(date_column)).one()
@@ -31,3 +32,14 @@ class LoadMaxDateColumn:
                 print(e.__class__.__name__, "-", str(e._message))
                 raise
         return 
+
+    def table_inspector(self, table_name: str) -> Any:
+        try:
+            if table_name in inspector.get_table_names():
+                return True
+        except SQLAlchemyError as e:
+                print("Error inspect table:")
+                print(e.__class__.__name__, "-", str(e._message))
+                raise
+
+                
