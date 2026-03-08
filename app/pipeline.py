@@ -1,6 +1,7 @@
-from main.controller.service_orders.service_orders_controller import ServiceOrderController
+from main.controller.service_orders_cover.service_orders_controller import ServiceOrderController
 from main.controller.customer_service_orders.customer_service_orders_controller import CustomerServiceOrderController
 from main.controller.related_service_orders.related_service_orders_controller import RelatedServiceOrderController
+from main.controller.items_service_orders.items_service_orders_controller import ItemsServiceOrdersController
 import time
 
 
@@ -20,6 +21,7 @@ if __name__ == "__main__":
     importar as tabelas satélites, perderemos informações.
     """
 
+    # Clientes de ordem de serviço.
     print(f"Iniciando o processamento OS Capa Cliente.")
     customer_service_order = CustomerServiceOrderController()
 
@@ -32,18 +34,32 @@ if __name__ == "__main__":
     print(f'Total de registros customer_service_orders_closed atualizados: {closed_customer_service_order}')
 
     time.sleep(2)
-
+    # Ordens de serviços relacionadas
     print("Iniciando o processamento OS Relacionada")
     related_service_order_controller = RelatedServiceOrderController()
     
     print(f"Processando Ordens de Serviço Relacionadas abertas.")
     related_service_order_open = related_service_order_controller.open_related_service_order_upsert()
     print(f"Total de registros related_service_order_open: {related_service_order_open}")
-    
     print(f"Processando Ordens de Serviço Relacionadas encerradas.")
-    related_service_order_closed = related_service_order_controller.closed_related_service_order_upsert
+    related_service_order_closed = related_service_order_controller.closed_related_service_order_upsert()
     print(f"Total de registros related_service_order_closed: {related_service_order_closed}")
-    
+    print(f"Total de registros related_service_order_closed: {related_service_order_closed}")
+
+    # Itens da ordem de serviço
+    print("Iniciando o processamento dos itens da OS")
+    items_service_orders_controller = ItemsServiceOrdersController()
+
+    print(f"Processando Itens de Ordens de Serviço abertas.")
+    items_service_orders_open = items_service_orders_controller.open_items_service_order_upsert()
+    print(f"Total de registros items_service_orders_open: {items_service_orders_open}")
+    print(f"Processando Itens de Ordens de Serviço encerradas.")
+    items_service_orders_closed = items_service_orders_controller.closed_items_service_order_upsert()
+    print(f"Total de registros items_service_orders_closed: {items_service_orders_closed}")
+    print(f"Processando Itens de Ordens de Serviço canceladas.")        
+
+
+    # Capa das ordens de serviço.
     print(f"Iniciando o processamento OS Capa.")
     start_time = time.time()
     os_capa_controller = ServiceOrderController()

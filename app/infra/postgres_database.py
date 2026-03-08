@@ -12,6 +12,5 @@ POSTGRES_STRING_URL = f"postgresql://{settings['db_user']}:{settings['db_pass']}
 engine = create_engine(POSTGRES_STRING_URL)
 inspector = inspect(engine)
 
-Base = declarative_base
-
+Base = declarative_base()
 PostgresSessionLocal = sessionmaker(autoflush=False, autocommit=False, bind=engine)
