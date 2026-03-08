@@ -1,4 +1,4 @@
-import pandera as pa
+import pandera.pandas as pa
 from pandera.typing import Series, Index
 from pandera import Field
 
@@ -16,7 +16,7 @@ class ServiceOrderServicesSchema(pa.DataFrameModel):
     numero_os: Series[int] = Field(ge=0, nullable=False)
     codigo_servico: Series[str] = Field(nullable=True)
     cod_defeito: Series[str] = Field(nullable=True)
-    descricao: Series[str] = Field(nullable=True)
+    descricao_defeito: Series[str] = Field(nullable=True)
 
     valor_mdo_os: Series[float] = Field(ge=0, nullable=True)
     valor_oc: Series[str] = Field(nullable=True)
