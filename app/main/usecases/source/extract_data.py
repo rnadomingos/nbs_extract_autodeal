@@ -44,7 +44,7 @@ class ExtractData:
             SchemaError: If the DataFrame does not conform to the provided schema.
         """
         try:
-            with engine.connect() as conn, conn.begin():
+            with engine.connect() as conn:
                 tqdm.pandas()
                 dataframe = pd.read_sql(self.query, conn, params=self.query_params) 
                 validate_df = schema.to_schema().validate(dataframe, lazy=lazy)
@@ -79,7 +79,7 @@ class ExtractData:
             >>> print(df.head())
         """
         try:
-            with engine.connect() as conn, conn.begin():
+            with engine.connect() as conn:
                 dataframe = pd.read_sql(self.query, conn, params=self.query_params) 
                 return dataframe                
         except SQLAlchemyError as e:
