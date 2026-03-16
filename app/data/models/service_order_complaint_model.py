@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, UniqueConstraint, Numeric
+from sqlalchemy import Column, Integer, String, UniqueConstraint
 from sqlalchemy.orm import declarative_base
 from infra.postgres_database import engine
 from datetime import datetime
@@ -6,7 +6,7 @@ import pytz
 
 Base = declarative_base()
 
-class ServiceOrderServicesModel(Base):
+class ServiceOrderComplaintModel(Base):
     """
     Modelo ORM para a tabela Itens da Ordem de Serviço.
     Attributes:
@@ -18,26 +18,21 @@ class ServiceOrderServicesModel(Base):
     def now_utc_minus_3(self):
         return datetime.now(pytz.timezone("America/Sao_Paulo"))
 
-    __tablename__ = "servicos_ordem_servico"
+    __tablename__ = "reclamacoes_ordem_servico"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
 
     cod_empresa = Column(Integer, nullable=False)
     numero_os = Column(Integer, nullable=False)
-    codigo_servico = Column(String, nullable=False)
-    cod_defeito = Column(String, nullable=True)
-    descricao_defeito = Column(String, nullable=True)
-    valor_mdo_os = Column(Numeric(10, 2), nullable=True)
-    valor_oc = Column(Numeric(10, 2), nullable=True)
-    quantidade_oc = Column(Integer, nullable=True)
-    nr_sg = Column(String, nullable=True)
+    reclamacao = Column(String, nullable=False)
+    item = Column(Integer, nullable=False)
 
     __table_args__ = (
         UniqueConstraint(
             "cod_empresa", 
             "numero_os", 
-            "codigo_servico", 
-            name="uq_cod_empresa_numero_os_codigo_servico"),
+            "item", 
+            name="uq_cod_empresa_numero_os_item"),
     )
 
 Base.metadata.create_all(engine)  
