@@ -20,7 +20,7 @@ stmt_closed_service_order_services = text("""
                     INNER JOIN os_tipos ostp ON (os.tipo = ostp.tipo)
                     INNER JOIN os_servicos ON (os_servicos.cod_empresa = os.cod_empresa AND os_servicos.numero_os  = os.numero_os)
                     INNER JOIN servicos serv ON (serv.cod_servico = os_servicos.cod_servico)
-                WHERE TO_CHAR(os.data_encerrada, 'dd/MM/YYYY') >= :max_date
+                WHERE TO_CHAR(os.data_encerrada, 'YYYY-MM-DD') >= :max_date
                     AND NVL(ostp.garantia, 'N') = 'S'
                     AND os.cod_empresa IN (2, 3, 4)
                     AND NVL(UPPER(os.orcamento), 'N') = 'N'

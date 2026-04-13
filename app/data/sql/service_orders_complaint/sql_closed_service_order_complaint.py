@@ -17,7 +17,7 @@ stmt_closed_service_order_complaint = text("""
                             LEFT JOIN os_original
                                 ON os_original.numero_os = os.numero_os
                             AND os_original.cod_empresa = os.cod_empresa
-                        WHERE to_char(os.data_encerrada,'dd/MM/YYYY') >= :max_date
+                        WHERE to_char(os.data_encerrada,'YYYY-MM-DD') >= :max_date
                             AND NVL(ostp.garantia, 'N') = 'S'
                             AND os.cod_empresa IN (2, 3, 4)
                             AND NVL(UPPER(os.orcamento), 'N') = 'N'

@@ -14,13 +14,11 @@ stmt_open_service_order_complaint = text("""
                     LEFT JOIN os_original
                         ON os_original.numero_os = os.numero_os
                       AND os_original.cod_empresa = os.cod_empresa
-                WHERE TO_CHAR(os.data_emissao, 'dd/MM/YYYY') > :max_date
+                WHERE TO_CHAR(os.data_emissao, 'YYYY-MM-DD') > :max_date
                     AND os.status_os = '0'
                     AND NVL(ostp.garantia, 'N') = 'S'
                     AND os.cod_empresa IN (2, 3, 4)
-                    -- AND os.numero_os > '0'
                     AND NVL(UPPER(os.orcamento), 'N') = 'N'
-
                 ORDER BY
                     os.cod_empresa,
                     os.numero_os,
