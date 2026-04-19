@@ -1,9 +1,132 @@
 # NBS Extract Autodeal
-Este é o Extrator de dados do NBS para um banco de dados intermediário do Postgres, onde outra aplicação irá consumir estes dados e enviar para o AWS da Autodeal (Sistema de gerenciamento de garantias enviadas para a montadora BMW).
 
-- [ ] Def Parametrizar conexão com NBS
-- [ ] Def Ler dados do NBS e retornar em DataFrame
-- [ ] Pandas DataFrame Validar dados de entrada
-- [ ] Pandas DataFrame Validar dados de saída
-- [ ] Def Adicionar testes unitários se possível
-- [ ] Def Carregar dados para o Banco de dados Postgres
+Projeto de **integração de dados** entre o **Dealer Management System** (DMS - Sistema de Gestão de Concessionárias) da **NBS** (Banco de dados Oracle) e um banco **PostgreSQL** intermediário. Esse Postgres serve de camada para consumo por outras aplicações — por exemplo, fluxos que levam informações ao ecossistema **Autodeal** / **BMW** (gestão de garantias e ordens de serviço).
+
+## Finalidade
+
+- Extrair dados operacionais do NBS (ordens de serviço e entidades relacionadas).
+- **Validar** os resultados com **Pandera** antes do carregamento.
+- Persistir no Postgres com **UPSERT** (insert ou atualização em conflito de chave), via **SQLAlchemy**.
+- Permitir execução **manual** (script Python) ou **agendada** com **Apache Airflow** (projeto no padrão **Astronomer Astro**).
+
+## O que o pipeline faz
+
+O fluxo segue uma ordem fixa: primeiro as tabelas “satélites” (detalhes em torno da OS) e por último a **capa da ordem de serviço**. Isso evita inconsistências quando se usa datas máximas no destino para cargas incrementais — a capa não deve ser a única entidade carregada antes dos detalhes.
+
+| Etapa | Conteúdo |
+|--------|-----------|
+| 1 | Clientes vinculados às ordens de serviço (abertas e encerradas) |
+| 2 | Ordens de serviço relacionadas |
+| 3 | Itens das ordens de serviço |
+| 4 | Serviços das ordens de serviço |
+| 5 | Reclamações das ordens de serviço |
+| 6 | Faturas das ordens de serviço |
+| 7 | **Capa** das ordens de serviço (incluindo canceladas, conforme SQL da etapa) |
+
+### Diagramas (Mermaid)
+
+**Sequência das etapas** — mesma ordem em `include.extract_stages.run` e no DAG `pipeline_nbs_to_postgres` (tasks encadeadas):
+
+```mermaid
+flowchart LR
+    T1[1 · Clientes OS] --> T2[2 · OS relacionadas]
+    T2 --> T3[3 · Itens OS]
+    T3 --> T4[4 · Serviços OS]
+    T4 --> T5[5 · Reclamações]
+    T5 --> T6[6 · Faturas]
+    T6 --> T7[7 · Capa OS]
+```
+
+**Padrão técnico de cada etapa** — consulta ao NBS, validação e gravação incremental no destino:
+
+```mermaid
+flowchart TB
+    O[(Oracle NBS)]
+    Q[SQL parametrizado<br/>pandas.read_sql]
+    V{Schema Pandera}
+    U[UPSERT SQLAlchemy<br/>ON CONFLICT DO UPDATE]
+    P[(PostgreSQL)]
+
+    O --> Q --> V
+    V -->|válido| U --> P
+    V -->|inválido| E[Erro de validação]
+```
+
+Cada etapa consulta o **Oracle** (SQL parametrizado), valida o **DataFrame** com o schema Pandera correspondente e grava no **Postgres** com `ON CONFLICT DO UPDATE`.
+
+Para cargas incrementais, o destino pode usar a **maior data** já presente em colunas de controle; se a tabela estiver vazia, usa-se a variável `INTEGRATION_START_DATE` do ambiente (veja abaixo).
+
+## Requisitos
+
+- **Python** `>= 3.12, < 3.15` (definido no `pyproject.toml`).
+- **Poetry** para dependências de desenvolvimento local.
+- **Oracle Instant Client** (modo *thick* do `oracledb`): o caminho deve estar em `ORACLE_DRIVER` no `.env`.
+- **PostgreSQL** acessível com usuário, senha, host, porta e nome do banco.
+- Para o **Airflow local** no modelo Astro: **Docker** e [**Astro CLI**](https://www.astronomer.io/docs/astro/cli/overview) (`astro dev`).
+
+## Configuração
+
+1. Copie o modelo de variáveis:
+
+   ```bash
+   cp .env_sample .env
+   ```
+
+2. Edite o `.env` na raiz do repositório (o carregamento usa `Path.cwd() / '.env'`).
+
+### Variáveis principais
+
+| Variável | Uso |
+|----------|-----|
+| `INTEGRATION_START_DATE` | Data inicial (`YYYY-MM-DD`) quando não há dado no Postgres para calcular máxima data em algumas rotinas. |
+| `ORACLE_*` | `USERNAME`, `PASSWORD`, `HOST`, `PORT`, `SERVICE`, e `DRIVER` (pasta do Instant Client). |
+| `POSTGRES_*` | `USERNAME`, `PASSWORD`, `HOST`, `PORT`, `SERVICE` (nome do banco). |
+| `AIRFLOW__CORE__ALLOWED_DESERIALIZATION_CLASSES` | Necessário no ambiente Airflow se tasks retornam/serializam tipos dos pacotes de schema (valor de exemplo no `.env_sample`). |
+
+No **Windows**, ajuste `ORACLE_DRIVER` para o caminho do Instant Client local (ex.: `app\infra\oracle\instantclient_23_8`). No **Linux** / imagem Docker do projeto, o Dockerfile define uso em `/opt/oracle/instantclient_23_9`.
+
+Conexões locais do Airflow (somente desenvolvimento) podem ser declaradas em `airflow_settings.yaml`, conforme a [documentação Astro](https://www.astronomer.io/docs/astro/cli/develop-project).
+
+## Como executar
+
+### Pipeline só com Python (sem Airflow)
+
+Na raiz do projeto, com o `.env` configurado e o Instant Client disponível:
+
+```bash
+poetry install
+poetry run python -m include.pipeline
+# equivalente: poetry run task run
+```
+
+Isso executa todas as etapas em sequência (`include.extract_stages.run`), usando os *builders* por etapa (`build_*`) no mesmo encadeamento do DAG.
+
+### Com Airflow (Astro)
+
+O DAG `pipeline_nbs_to_postgres` está em `dags/nbs_to_postgres.py`: uma task por etapa, encadeadas na mesma ordem do script acima. O agendamento padrão no código é **`0 * * * 1-6`** (a **cada hora** no minuto 0, **de segunda a sábado**), sem *catchup*. Ajuste o `schedule` no DAG se precisar de outra janela.
+
+Com Astro CLI instalado:
+
+```bash
+astro dev
+```
+
+Abra a UI do Airflow, habilite o DAG se necessário e acompanhe as tasks. A imagem customizada está no `Dockerfile` (runtime Astro + Instant Client Oracle).
+
+### Testes e qualidade
+
+```bash
+poetry run pytest -v
+poetry run task format   # isort + black (via taskipy)
+```
+
+Há testes em `tests/` — por exemplo integridade de importação de DAGs em `tests/dags/` e testes de `load_settings` em `tests/infra/`. O Astro também pode incluir checagens em `.astro/` (integridade de DAG conforme template do CLI).
+
+## Estrutura útil do repositório
+
+- `include/` — Lógica da pipeline: `extract_stages`, controllers, SQL, modelos SQLAlchemy, schemas Pandera, infra Oracle/Postgres.
+- `dags/` — Definição do DAG Airflow.
+- `.astro/` — Metadados do projeto Astro CLI (ex.: `config.yaml`) e utilitários de teste/integridade opcionais.
+- `Dockerfile` — Imagem de execução com Oracle client para deploy/desenvolvimento Astro.
+- `requirements.txt` — Dependências pip usadas na imagem Docker (alinhadas ao projeto).
+
