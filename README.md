@@ -1,6 +1,11 @@
 # NBS Extract Autodeal
 
+
 Projeto de **integração de dados** entre o **Dealer Management System** (DMS - Sistema de Gestão de Concessionárias) da **NBS** (Banco de dados Oracle) e um banco **PostgreSQL** intermediário. Esse Postgres serve de camada para consumo por outras aplicações — por exemplo, fluxos que levam informações ao ecossistema **Autodeal** / **BMW** (gestão de garantias e ordens de serviço).
+
+
+![NBS Extract Autodeal - Tech Flow](./nbs_extract_postgres.png)
+
 
 ## Finalidade
 
