@@ -174,4 +174,7 @@ poetry.toml
 # LSP config files
 pyrightconfig.json
 
+### Oracle Instant Client (binários locais; não versionar — bloqueiam push por tamanho/tipo) ###
+include/infra/oracle/instantclient_23_8/
+
 # End of https://www.toptal.com/developers/gitignore/api/python

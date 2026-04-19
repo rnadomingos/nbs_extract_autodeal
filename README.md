@@ -60,7 +60,7 @@ Para cargas incrementais, o destino pode usar a **maior data** já presente em c
 
 - **Python** `>= 3.12, < 3.15` (definido no `pyproject.toml`).
 - **Poetry** para dependências de desenvolvimento local.
-- **Oracle Instant Client** (modo *thick* do `oracledb`): o caminho deve estar em `ORACLE_DRIVER` no `.env`.
+- **Oracle Instant Client** (modo *thick* do `oracledb`): o caminho da pasta do client deve estar em `ORACLE_DRIVER` no `.env` (instruções na secção seguinte, *Oracle Instant Client (execução local)*).
 - **PostgreSQL** acessível com usuário, senha, host, porta e nome do banco.
 - Para o **Airflow local** no modelo Astro: **Docker** e [**Astro CLI**](https://www.astronomer.io/docs/astro/cli/overview) (`astro dev`).
 
@@ -74,6 +74,22 @@ Para cargas incrementais, o destino pode usar a **maior data** já presente em c
 
 2. Edite o `.env` na raiz do repositório (o carregamento usa `Path.cwd() / '.env'`).
 
+### Oracle Instant Client (execução local)
+
+O código chama `oracledb.init_oracle_client(lib_dir=...)` com o valor de `ORACLE_DRIVER`. Os binários do **Instant Client** são grandes e **não devem ser commitados** — por isso a pasta `include/infra/oracle/instantclient_23_8/` está no `.gitignore`.
+
+**Download e instalação (Windows, exemplo 23.x):**
+
+1. Baixe o pacote **Instant Client Basic** (ou **Basic Light**) para **Windows x64** na página oficial da Oracle: [Oracle Instant Client para Microsoft Windows (x64)](https://www.oracle.com/database/technologies/instant-client/winx64-64-downloads.html). É necessário aceitar a licença e, se pedido, criar/login em conta Oracle.
+2. Crie a pasta do projeto (vazia no Git): `include/infra/oracle/instantclient_23_8/`.
+3. Extraia o **conteúdo** do ZIP para dentro dessa pasta. Deve haver bibliotecas como `oci.dll` nesse diretório (layout padrão do ZIP da Oracle).
+4. No `.env`, defina por exemplo:
+   - `ORACLE_DRIVER=include\infra\oracle\instantclient_23_8`, ou
+   - caminho **absoluto** para a mesma pasta, se preferir (útil se executar de outro diretório de trabalho).
+5. Se ocorrer erro de DLL ao conectar, instale o [**Microsoft Visual C++ Redistributable**](https://learn.microsoft.com/pt-br/cpp/windows/latest-supported-vc-redist) na arquitetura x64, conforme a [documentação do Instant Client](https://www.oracle.com/database/technologies/instant-client.html).
+
+No **Linux** (incluindo a imagem Docker deste repositório), o `Dockerfile` instala o client em `/opt/oracle/instantclient_23_9`; use `ORACLE_DRIVER` coerente com o ambiente.
+
 ### Variáveis principais
 
 | Variável | Uso |
@@ -83,7 +99,7 @@ Para cargas incrementais, o destino pode usar a **maior data** já presente em c
 | `POSTGRES_*` | `USERNAME`, `PASSWORD`, `HOST`, `PORT`, `SERVICE` (nome do banco). |
 | `AIRFLOW__CORE__ALLOWED_DESERIALIZATION_CLASSES` | Necessário no ambiente Airflow se tasks retornam/serializam tipos dos pacotes de schema (valor de exemplo no `.env_sample`). |
 
-No **Windows**, ajuste `ORACLE_DRIVER` para o caminho do Instant Client local (ex.: `app\infra\oracle\instantclient_23_8`). No **Linux** / imagem Docker do projeto, o Dockerfile define uso em `/opt/oracle/instantclient_23_9`.
+No **Windows**, use `ORACLE_DRIVER` apontando para a pasta local ignorada pelo Git (ex.: `include\infra\oracle\instantclient_23_8`). No **Linux** / imagem Docker, o Dockerfile usa `/opt/oracle/instantclient_23_9`.
 
 Conexões locais do Airflow (somente desenvolvimento) podem ser declaradas em `airflow_settings.yaml`, conforme a [documentação Astro](https://www.astronomer.io/docs/astro/cli/develop-project).
 
