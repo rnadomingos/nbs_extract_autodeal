@@ -131,7 +131,7 @@ O DAG `pipeline_nbs_to_postgres` está em `dags/nbs_to_postgres.py`: uma task po
 Com Astro CLI instalado:
 
 ```bash
-astro dev
+astro dev start
 ```
 
 Abra a UI do Airflow, habilite o DAG se necessário e acompanhe as tasks. A imagem customizada está no `Dockerfile` (runtime Astro + Instant Client Oracle).
