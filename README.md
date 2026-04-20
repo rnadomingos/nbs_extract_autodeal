@@ -136,15 +136,6 @@ astro dev
 
 Abra a UI do Airflow, habilite o DAG se necessário e acompanhe as tasks. A imagem customizada está no `Dockerfile` (runtime Astro + Instant Client Oracle).
 
-### Testes e qualidade
-
-```bash
-poetry run pytest -v
-poetry run task format   # isort + black (via taskipy)
-```
-
-Há testes em `tests/` — por exemplo integridade de importação de DAGs em `tests/dags/` e testes de `load_settings` em `tests/infra/`. O Astro também pode incluir checagens em `.astro/` (integridade de DAG conforme template do CLI).
-
 ## Estrutura útil do repositório
 
 - `include/` — Lógica da pipeline: `extract_stages`, controllers, SQL, modelos SQLAlchemy, schemas Pandera, infra Oracle/Postgres.
