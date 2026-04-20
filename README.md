@@ -44,6 +44,8 @@ flowchart LR
     T6 --> T7[7 · Capa OS]
 ```
 
+![Airflow Dag Tasks - Tech Flow](./pipeline_nbs_to_postgres-graph.png)
+
 **Padrão técnico de cada etapa** — consulta ao NBS, validação e gravação incremental no destino:
 
 ```mermaid
@@ -135,6 +137,9 @@ astro dev start
 ```
 
 Abra a UI do Airflow, habilite o DAG se necessário e acompanhe as tasks. A imagem customizada está no `Dockerfile` (runtime Astro + Instant Client Oracle).
+
+
+![Airflow Dag Excecution - Tech Flow](./pipeline_airflow.png)
 
 ## Estrutura útil do repositório
 
