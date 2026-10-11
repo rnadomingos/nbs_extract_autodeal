@@ -32,7 +32,7 @@ class ServiceOrderServicesController:
         upsert_service_order_services = UpsertData(
             data_frame=data_frame_service_order_services,
             data_model=ServiceOrderServicesModel,
-            conflict_keys=['cod_empresa', 'numero_os', 'codigo_servico']
+            conflict_keys=['cod_empresa', 'numero_os', 'item', 'codigo_servico']
         )   
         saved_service_order_services = upsert_service_order_services.save_data()
         return len(saved_service_order_services)    
@@ -52,7 +52,7 @@ class ServiceOrderServicesController:
         upsert_service_order_services = UpsertData(
             data_frame=data_frame_service_order_services,
             data_model=ServiceOrderServicesModel,
-            conflict_keys=['cod_empresa', 'numero_os', 'codigo_servico']
+            conflict_keys=['cod_empresa', 'numero_os', 'item', 'codigo_servico']
         )   
         saved_service_order_services = upsert_service_order_services.save_data()
         return len(saved_service_order_services)

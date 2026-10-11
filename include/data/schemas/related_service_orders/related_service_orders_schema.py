@@ -1,6 +1,6 @@
-import pandera.pandas as pa
 import pandas as pd
-from pandera.typing import Series, Index
+import pandera.pandas as pa
+from pandera.typing import Index
 from pandera import Field
 
 
@@ -12,10 +12,11 @@ class RelatedServiceOrderSchema(pa.DataFrameModel):
     service order number with defined ranges and nullability rules.
     """
 
-    cod_empresa: Series[int] = Field(ge=2, nullable=False)
-    numero_os: Series[int] = Field(ge=0, nullable=False)
-    numero_os_irma: Series[pd.Int64Dtype] = Field(ge=0, nullable=True, coerce=True)
-
+    cod_empresa: int = Field(ge=2, nullable=False)
+    numero_os: int = Field(ge=0, nullable=False)
+    numero_os_irma: pd.Int64Dtype = Field(
+        ge=0, nullable=True
+    )  # pd.Int64Dtype para validar nullable com números inteiros
 
     # Index validation
     __index__: Index[int] = Field(ge=0, nullable=False)

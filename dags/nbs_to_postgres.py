@@ -42,12 +42,13 @@ def pipeline_nbs_to_postgres():
     @task(task_id='service_order_invoice')
     def task_service_order_invoices():
         return build_service_order_invoices().execute()
-    
+
     @task(task_id='service_order_cover')
     def task_service_order_cover():
         return build_service_orders_cover().execute()
 
     t1 = task_build_customer_service_orders()
+
     t2 = taskbuild_related_service_orders()
     t3 = task_build_items_service_orders()
     t4 = task_build_service_order_services()
@@ -58,3 +59,4 @@ def pipeline_nbs_to_postgres():
     t1 >> t2 >> t3 >> t4 >> t5 >> t6 >> t7
 
 pipeline_nbs_to_postgres()
+

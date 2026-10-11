@@ -1,21 +1,18 @@
 from sqlalchemy import text
 
-stmt_closed_service_order_services = text("""
+stmt_closed_service_order_services = text(
+    """
                 -- SCRIPT PARA ATUALIZAR OS SERVIÇOS DAS OSs NO FECHAMENTO NA TABELA OS_SERVICOS
                 SELECT
+                    -- ORDEM DE SERVIÇO
                     os.cod_empresa,
-                    os.numero_os,
+                    os.numero_os,   
+                    -- SERVIÇOS
+                    os_servicos.item,
                     SUBSTR(os_servicos.cod_servico, 0, 11) AS codigo_servico,
-                    SUBSTR(os_servicos.item, 0, 10)        AS cod_defeito,
-                    TRIM(
-                        UPPER(
-                            SUBSTR(serv.descricao_servico, 0, 160)
-                        )
-                    ) AS descricao_defeito,
-                    os_servicos.preco_venda AS valor_mdo_os,
-                    '' AS valor_oc,
-                    '' AS quantidade_oc,
-                    '' AS nr_sg
+                    os_servicos.defeito AS cod_defeito,
+                    TRIM(UPPER(SUBSTR(serv.descricao_servico, 1, 160))) AS descritivo,
+                    os_servicos.preco_venda AS valor
                 FROM os
                     INNER JOIN os_tipos ostp ON (os.tipo = ostp.tipo)
                     INNER JOIN os_servicos ON (os_servicos.cod_empresa = os.cod_empresa AND os_servicos.numero_os  = os.numero_os)
@@ -27,4 +24,5 @@ stmt_closed_service_order_services = text("""
                 ORDER BY
                     os.cod_empresa,
                     os.numero_os,
-                    os_servicos.item""")
+                    os_servicos.item"""
+)

@@ -1,7 +1,8 @@
 from sqlalchemy import text
 
-stmt_closed_service_order_complaint = text("""
-                         SELECT
+stmt_closed_service_order_complaint = text(
+    """
+                        SELECT
                             -- ORDEM DE SERVIÇO
                             os.cod_empresa,
                             os.numero_os,
@@ -22,9 +23,8 @@ stmt_closed_service_order_complaint = text("""
                             AND os.cod_empresa IN (2, 3, 4)
                             AND NVL(UPPER(os.orcamento), 'N') = 'N'
                             AND os.numero_os > 0
-
                         ORDER BY
                             os.cod_empresa,
                             os.numero_os,
-                            os_original.item ASC
-                                    """)
+                            os_original.item ASC"""
+)

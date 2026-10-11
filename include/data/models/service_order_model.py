@@ -10,12 +10,15 @@ class ServiceOrderModel(Base):
     """
     Modelo ORM para a tabela da OS Capa.
     Attributes:
-        cod_empresa (int): Identificador da Empresa (entre 2 e 3).
+        cod_empresa (int): Identificador da Empresa (entre 2 e 4).
         numero_os (int): Número da ordem de serviço.
         data_emissao (datetime): Data de emissão da OS.
-        data_encerramento (str): Data de encerramento da OS.
-        data_cancelamento (str): Data de cancelamento da OS.
-        ...
+        data_encerramento (datetime): Data de encerramento da OS.
+        data_cancelamento (datetime): Data de cancelamento da OS.
+        codigo_garantia (str): Código de garantia (tipo_fabrica).
+        total_pecas (float): Valor total de peças com desconto.
+        total_servicos (float): Valor total de serviços com desconto.
+        valor_total (float): Valor total estimado da OS.
     """
     def now_utc_minus_3(self):
         return datetime.now(pytz.timezone("America/Sao_Paulo"))
@@ -41,8 +44,10 @@ class ServiceOrderModel(Base):
     data_venda = Column(DateTime, nullable=True)
     status_os = Column(String, nullable=False)
     numero_do_dealer = Column(String, nullable=False)
-    razao_social_dealer = Column(String, nullable=False)
-    valor_estimado_os = Column(Float, nullable=False)
+    codigo_garantia = Column(String, nullable=True)
+    total_pecas = Column(Float, nullable=False)
+    total_servicos = Column(Float, nullable=False)
+    valor_total = Column(Float, nullable=False)
     created_at = Column(DateTime(timezone=True), default=now_utc_minus_3)
     updated_at = Column(DateTime(timezone=True), default=now_utc_minus_3, onupdate=now_utc_minus_3)
     sent_autodeal = Column(Boolean, default=False)

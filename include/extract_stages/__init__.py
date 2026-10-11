@@ -8,6 +8,7 @@ from .service_order_services import build_service_order_services
 from .service_order_invoices import build_service_order_invoices
 from .service_orders_cover import build_service_orders_cover
 
+
 def run() -> None:
     """Executa as etapas na ordem exigida pelo modelo de dados.
 

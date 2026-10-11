@@ -1,5 +1,5 @@
 import pandera.pandas as pa
-from pandera.typing import Series, Index
+from pandera.typing import Index
 from pandera import Field
 
 
@@ -12,15 +12,12 @@ class ServiceOrdersComplaintSchema(pa.DataFrameModel):
     and associated item number.
     """
 
-    cod_empresa: Series[int] = Field(nullable=False)
-    numero_os: Series[int] = Field(ge=0, nullable=False)
-    reclamacao: Series[str] = Field(nullable=False)
-    item: Series[int] = Field(ge=1,nullable=False)
+    cod_empresa: int = Field(nullable=False)
+    numero_os: int = Field(ge=0, nullable=False)
+    reclamacao: str = Field(nullable=False)
+    item: int = Field(ge=1, nullable=False)
     # Index validation
-    __index__: Index[int] = Field(
-        ge=0,
-        nullable=False
-    )
+    __index__: Index[int] = Field(ge=0, nullable=False)
 
     class Config:
         coerce = True

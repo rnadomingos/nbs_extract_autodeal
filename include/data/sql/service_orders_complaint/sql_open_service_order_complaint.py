@@ -1,12 +1,12 @@
 from sqlalchemy import text
 
-stmt_open_service_order_complaint = text("""
-                          SELECT
+stmt_open_service_order_complaint = text(
+    """
+                SELECT
                     os.cod_empresa,
                     os.numero_os,
                     TRIM(UPPER(os_original.descricao)) AS reclamacao,
                     os_original.item
-
                 FROM os
                     INNER JOIN os_tipos ostp
                         ON os.tipo = ostp.tipo
@@ -22,5 +22,5 @@ stmt_open_service_order_complaint = text("""
                 ORDER BY
                     os.cod_empresa,
                     os.numero_os,
-                    os_original.item
-                                    """)
+                    os_original.item"""
+)

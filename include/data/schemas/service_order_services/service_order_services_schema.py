@@ -1,5 +1,5 @@
 import pandera.pandas as pa
-from pandera.typing import Series, Index
+from pandera.typing import Index
 from pandera import Field
 
 
@@ -8,26 +8,19 @@ class ServiceOrderServicesSchema(pa.DataFrameModel):
     Schema for validating service order services data.
 
     Defines validation rules for services performed within a service order,
-    including service codes, defect information, labor values, and related
-    order references.
+    including service codes, defect information and labor values.
     """
 
-    cod_empresa: Series[int] = Field(nullable=False)
-    numero_os: Series[int] = Field(ge=0, nullable=False)
-    codigo_servico: Series[str] = Field(nullable=True)
-    cod_defeito: Series[str] = Field(nullable=True)
-    descricao_defeito: Series[str] = Field(nullable=True)
-
-    valor_mdo_os: Series[float] = Field(ge=0, nullable=True)
-    valor_oc: Series[str] = Field(nullable=True)
-    quantidade_oc: Series[str] = Field(nullable=True)
-    nr_sg: Series[str] = Field(nullable=True)
+    cod_empresa: int = Field(nullable=False)
+    numero_os: int = Field(ge=0, nullable=False)
+    item: int = Field(nullable=True)
+    codigo_servico: str = Field(nullable=True)
+    cod_defeito: str = Field(nullable=True)
+    descritivo: str = Field(nullable=True)
+    valor: float = Field(ge=0, nullable=True)
 
     # Index validation
-    __index__: Index[int] = Field(
-        ge=0, 
-        nullable=False
-    )
+    __index__: Index[int] = Field(ge=0, nullable=False)
 
     class Config:
         coerce = True

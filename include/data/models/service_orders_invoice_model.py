@@ -34,6 +34,7 @@ class ServiceOrdersInvoiceModel(Base):
         UniqueConstraint(
             'cod_empresa', 
             'numero_os', 
+            'nr_nota_fiscal',
             name='uq_service_order_invoice'),
     )
 

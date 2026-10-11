@@ -1,5 +1,4 @@
 import pandera.pandas as pa
-from pandera.typing import Series
 from datetime import datetime
 
 
@@ -12,7 +11,7 @@ class OSCapaSchema(pa.DataFrameModel):
     ensure data quality and type consistency before further processing.
 
     Attributes:
-        cod_empresa (Series[int]): Company identifier. Must be either 2 or 3.
+        cod_empresa (Series[int]): Company identifier. Must be between 2 and 4.
         numero_os (Series[int]): Service order number. Must be a non-negative integer.
         os_original (Series[str]): Indicates if the order is original.
         data_emissao (Series[datetime]): Emission date. Must be on or after 2024-10-21.
@@ -29,35 +28,38 @@ class OSCapaSchema(pa.DataFrameModel):
         data_venda (Series[datetime]): Sale date. Must be on or after 1899-12-30. Nullable.
         status_os (Series[str]): Status of the service order.
         numero_do_dealer (Series[str]): Dealer identification number.
-        razao_social_dealer (Series[str]): Dealer name.
-        valor_estimado_os (Series[float]): Estimated service order cost. Must be non-negative.
+        codigo_garantia (Series[str]): Warranty code (tipo_fabrica). Nullable.
+        total_pecas (Series[float]): Total parts value after discount. Must be non-negative.
+        total_servicos (Series[float]): Total services value after discount. Must be non-negative.
+        valor_total (Series[float]): Total estimated service order value. Must be non-negative.
 
     Config:
         coerce (bool): Automatically convert column types where possible.
         strict (bool): Require that all defined columns exist in the input DataFrame.
         unique_column_names (bool): Disable check for unique column names.
     """
-    cod_empresa: Series[int] = pa.Field(
-        ge=2, le=3
-    )
-    numero_os: Series[int] = pa.Field(ge=0)
-    os_original: Series[str]
-    data_emissao: Series[datetime] = pa.Field(ge="2024-10-21")
-    data_encerramento: Series[str] = pa.Field(nullable=True)
-    data_cancelamento: Series[str] = pa.Field(nullable=True)
-    razao_social: Series[str]
-    tipo_os: Series[str]
-    responsavel: Series[str]
-    chassi: Series[str]
-    veic_modelo: Series[str]
-    ano: Series[str]
-    km: Series[int] = pa.Field(ge=0)
-    placa: Series[str] = pa.Field(nullable=True)
-    data_venda: Series[datetime] = pa.Field(ge="1899-12-30", nullable=True)
-    status_os: Series[str]
-    numero_do_dealer: Series[str]
-    razao_social_dealer: Series[str]
-    valor_estimado_os: Series[float] = pa.Field(ge=0)
+
+    cod_empresa: int = pa.Field(ge=2, le=4)
+    numero_os: int = pa.Field(ge=0)
+    os_original: str
+    data_emissao: datetime = pa.Field(ge="2024-10-21")
+    data_encerramento: str = pa.Field(nullable=True)
+    data_cancelamento: str = pa.Field(nullable=True)
+    razao_social: str
+    tipo_os: str
+    responsavel: str
+    chassi: str
+    veic_modelo: str
+    ano: str
+    km: int = pa.Field(ge=0)
+    placa: str = pa.Field(nullable=True)
+    data_venda: datetime = pa.Field(ge="1899-12-30", nullable=True)
+    status_os: str
+    numero_do_dealer: str
+    codigo_garantia: str = pa.Field(nullable=True)
+    total_pecas: float = pa.Field(ge=0)
+    total_servicos: float = pa.Field(ge=0)
+    valor_total: float = pa.Field(ge=0)
 
     class Config:
         coerce = True
