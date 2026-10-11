@@ -10,6 +10,12 @@ __pycache__/
 # C extensions
 *.so
 
+# Astro CLI
+.astro/
+
+# Docs Autonox
+docs/api_autonox/
+
 # Distribution / packaging
 .Python
 build/
